@@ -5,4 +5,5 @@
 // Exhaust oxygen
 // Throttle position
 // Engine speed
-
+// Knock
+// 
