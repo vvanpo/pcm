@@ -1,9 +1,13 @@
 # uvcs
 
+- Authentication serial input (Key, RFID, etc.)
+- Accessories switch
+- On switch
+
 ## Engine control
 ---
 
-### Inputs (sensors)
+### Inputs
 
 - Intake air volume sensor
 - Barometer
@@ -16,19 +20,26 @@
 - Crankshaft position sensor
 - Camshaft position switch (on cylinder #1 TDC between compression/exhaust stroke)
 - Fuel pressure sensor
-- Brake switch
-- Clutch switch
-- Transmission/transfer case switches
-- Authentication serial input (Key, RFID, etc.)
-- Accessories switch
-- On switch
 - Starter switch
 
-### Outputs (actuators)
+### Outputs
 
 - Throttle position motor
 - Ignition relays
 - Fuel injector relays
 - Fuel pressure regulator
 - Fuel pump relay
-- Camshaft advance actuator?
+- Camshaft timing actuator
+
+## Drivetrain control
+---
+
+### Inputs
+
+- Clutch switch
+- Transmission/transfer case switches
+- Brake switch
+
+### Outputs
+
+- Hub-locking actuator
