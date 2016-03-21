@@ -1,0 +1,15 @@
+#!/usr/bin/env python3
+
+import curses, os
+
+device = '/dev/ttyS0'
+
+def main(stdscr):
+	stdscr.nodelay(True)
+	fd = os.open(device, os.O_RDWR)
+	while True:
+		cmd = stdscr.getch()
+		if cmd == ord('q'): break
+	os.close(fd)
+
+curses.wrapper(main)
