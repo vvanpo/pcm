@@ -2,14 +2,17 @@
 
 import curses, os
 
+class packet:
+    pass
+
 device = '/dev/ttyUSB0'
 
 def main(stdscr):
-	stdscr.nodelay(True)
-	fd = os.open(device, os.O_RDWR | os.O_NDELAY)
-	while True:
-		cmd = stdscr.getkey()
-		if cmd == 'q': break
-	os.close(fd)
+    stdscr.nodelay(True)
+    fd = os.open(device, os.O_RDWR | os.O_NDELAY)
+    while True:
+        cmd = stdscr.getkey()
+        if cmd == 'q': break
+    os.close(fd)
 
 curses.wrapper(main)
