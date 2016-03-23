@@ -39,7 +39,9 @@
 - Clutch switch
 - Transmission/transfer case switches
 - Brake switch
+- Wheel speed sensor
 
 ### Outputs
 
 - Hub-locking actuator
+- Anti-roll actuator
