@@ -4,14 +4,18 @@
 #include <avr/interrupt.h>
 #include <avr/sleep.h>
 
-#define F_OSC 16000000L
-#define BAUD 57600
-#define UBRR (F_OSC / (BAUD * 16L) - 1)
+#define BAUD 250000
+#include <util/setbaud.h>
 
 int main (void) {
     // Initialize UART
-    UBRR0H = (uint8_t) UBRR >> 8;
-    UBRR0L = (uint8_t) UBRR;
+    UBRR0H = UBRRH_VALUE;
+    UBRR0L = UBRRL_VALUE;
+#if USE_2X
+    UCSR0A |= _BV(U2X0);
+#else
+    UCSR0A &= ~_BV(U2X0);
+#endif
     UCSR0B = _BV(TXEN0) | _BV(RXEN0);
     char c;
     while (1) {
