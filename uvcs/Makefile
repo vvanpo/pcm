@@ -18,8 +18,13 @@ test.hex: test.c
 test.elf: test.c
 	$(CC) $(CFLAGS) $(CPPFLAGS) -o test.elf test.c
 
+ft232h_isp: ft232h_isp.c
+	gcc -std=c11 -Wall -Wno-parentheses -g -o ft232h_isp ft232h_isp.c -lftdi1
+
+isp: ft232h_isp
+
 install:
 	avrdude -v -p $(MCU_TARGET) -c $(PROGRAMMER) -P $(TTY) -b 57600 -D -U flash:w:test.hex:i
 
 clean:
-	rm -f *.hex *.elf
+	rm -f *.hex *.elf ft232h_isp
