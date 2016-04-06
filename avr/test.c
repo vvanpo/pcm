@@ -4,15 +4,21 @@
 #include <avr/interrupt.h>
 #include <avr/sleep.h>
 
-#define BAUD 250000
+#define BAUD 38400
 #include <util/setbaud.h>
 
-void init_uart ();
+void init_uart (void);
 
 int main (void)
 {
     init_uart();
-    
+    char c;
+    while (1) {
+        loop_until_bit_is_set(UCSR0A, RXC0);
+        c = UDR0;
+        loop_until_bit_is_set(UCSR0A, UDRE0);
+        UDR0 = c;
+    }
     return 0;
 }
 
