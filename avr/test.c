@@ -7,18 +7,21 @@
 #define BAUD 38400
 #include <util/setbaud.h>
 
+#include <simavr/avr/avr_mcu_section.h>
+AVR_MCU_SIMAVR_CONSOLE(GPIOR0);
+
 void init_uart (void);
 
 int main (void)
 {
+    char *s = "hello world";
     init_uart();
-    char c;
-    while (1) {
-        loop_until_bit_is_set(UCSR0A, RXC0);
-        c = UDR0;
-        loop_until_bit_is_set(UCSR0A, UDRE0);
-        UDR0 = c;
-    }
+    while (1)
+        for (int i = 0; i < 13; i++) {
+            loop_until_bit_is_set(UCSR0A, UDRE0);
+            UDR0 = *(s + i);
+            GPIOR0 = *(s + i);
+        }
     return 0;
 }
 
