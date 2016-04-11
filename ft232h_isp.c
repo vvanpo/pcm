@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
+#include <string.h>
 #include <libftdi1/ftdi.h>
 #include <assert.h>
 
@@ -38,10 +39,15 @@ void set_spi_mode (struct ft232h *, bool, int);
 void set_pins (struct ft232h *, enum value, unsigned char, enum direction);
 void write_pins (struct ft232h *, enum value, unsigned char, unsigned char);
 unsigned char read_pins (struct ft232h *, enum value, unsigned char);
+void transfer (struct ft232h *, unsigned char *, size_t);
 
 int main (int argc, char **argv)
 {
     struct ft232h *context = init();
+    while (1) {
+        char buf[] = "hello world\n";
+        transfer(context, (unsigned char *) buf, strlen(buf));
+    }
     return 0;
 }
 
@@ -118,4 +124,24 @@ unsigned char read_pins (struct ft232h *context, enum value byte, unsigned char 
             fputs(ftdi_get_error_string(context->ftdi), stderr);
     }
     return buf & pins;
+}
+
+void transfer (struct ft232h *context, unsigned char *buf, size_t size)
+{
+    int ret;
+    if (size > 0x10000 || size < 1) return;
+    unsigned char *wbuf = malloc(3 + size);
+    wbuf[0] = 0x30
+        | (context->clock_polarity ^ context->clock_phase) << 3
+        | (context->clock_polarity & context->clock_phase);
+    wbuf[1] = 0xff & (size - 1);
+    wbuf[2] = (size - 1) >> 8;
+    memcpy(wbuf + 3, buf, size);
+    if ((ret = ftdi_write_data(context->ftdi, wbuf, size + 3)) < 0)
+        fputs(ftdi_get_error_string(context->ftdi), stderr);
+    assert(ret == 3 + size);
+    for (int data = 0; data < size; data += ret) {
+        if ((ret = ftdi_read_data(context->ftdi, buf, size)) < 0)
+            fputs(ftdi_get_error_string(context->ftdi), stderr);
+    }
 }
