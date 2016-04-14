@@ -44,9 +44,10 @@ void transfer (struct ft232h *, unsigned char *, size_t);
 int main (int argc, char **argv)
 {
     struct ft232h *context = init();
-    while (1) {
-        char buf[] = "hello world\n";
-        transfer(context, (unsigned char *) buf, strlen(buf));
+    int ret;
+    char *write = "hello world\n";
+    for (int i = 0; 1; i++) {
+        write(context, write, strlen(write));
     }
     return 0;
 }
@@ -126,22 +127,33 @@ unsigned char read_pins (struct ft232h *context, enum value byte, unsigned char 
     return buf & pins;
 }
 
-void transfer (struct ft232h *context, unsigned char *buf, size_t size)
+void write (struct ft232h *context, unsigned char *buf, size_t size)
 {
     int ret;
     if (size > 0x10000 || size < 1) return;
-    unsigned char *wbuf = malloc(3 + size);
-    wbuf[0] = 0x30
-        | (context->clock_polarity ^ context->clock_phase) << 3
-        | (context->clock_polarity & context->clock_phase);
-    wbuf[1] = 0xff & (size - 1);
-    wbuf[2] = (size - 1) >> 8;
-    memcpy(wbuf + 3, buf, size);
-    if ((ret = ftdi_write_data(context->ftdi, wbuf, size + 3)) < 0)
+    unsigned char command[3] = { 0x10
+            | (context->clock_polarity ^ context->clock_phase) << 3
+            | (context->clock_polarity & context->clock_phase),
+        0xff & (size - 1),
+        (size - 1) >> 8};
+    if ((ret = ftdi_write_data(context->ftdi, command, 3)) < 0)
         fputs(ftdi_get_error_string(context->ftdi), stderr);
-    assert(ret == 3 + size);
-    for (int data = 0; data < size; data += ret) {
-        if ((ret = ftdi_read_data(context->ftdi, buf, size)) < 0)
-            fputs(ftdi_get_error_string(context->ftdi), stderr);
-    }
+    assert(ret == 3);
+    if ((ret = ftdi_write_data(context->ftdi, buf, size)) < 0)
+        fputs(ftdi_get_error_string(context->ftdi), stderr);
+    assert(ret == size);
+}
+
+unsigned char *read (struct ft232h *context, size_t size)
+{
+    int ret;
+    if (size > 0x10000 || size < 1) return;
+    unsigned char command[3] = { 0x20
+            | (context->clock_polarity ^ context->clock_phase) << 3
+            | (context->clock_polarity & context->clock_phase),
+        0xff & (size - 1),
+        (size - 1) >> 8};
+    if ((ret = ftdi_write_data(context->ftdi, command, 3)) < 0)
+        fputs(ftdi_get_error_string(context->ftdi), stderr);
+    assert(ret == 3);
 }
