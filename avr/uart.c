@@ -1,5 +1,6 @@
 
 #include <inttypes.h>
+#include <string.h>
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <avr/sleep.h>
@@ -12,16 +13,12 @@ void init_uart (void);
 int main (void)
 {
     cli();
-    char *s = "hello world";
     init_uart();
-    DDRB |= _BV(DDB5);
-    while (1)
-        //PORTB |= _BV(PB5);
-        for (int i = 0; i < 13; i++) {
-            loop_until_bit_is_set(UCSR0A, UDRE0);
-            UDR0 = *(s + i);
-            //GPIOR0 = *(s + i);
-        }
+    char *s = "Hello world.\n";
+    for (int i = 0; i < strlen(s) + 1; i++) {
+        loop_until_bit_is_set(UCSR0A, UDRE0);
+        UDR0 = *(s + i);
+    }
     return 0;
 }
 
