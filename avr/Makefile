@@ -1,4 +1,4 @@
-NAME=blink
+NAME=pwm
 
 MCU_TARGET=atmega328p
 # F_CPU is needed for <util/delay.h>

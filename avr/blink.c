@@ -8,7 +8,7 @@ int main (void)
 {
     // Set PB5 (Arduino pin 13) as output
     DDRB |= _BV(DDB5);
-    for (int i = 0; i < 10; i++) {
+    while (1) {
         PORTB |= _BV(PORTB5);
         _delay_ms(BLINK_DELAY);
         PORTB &= ~_BV(PORTB5);
