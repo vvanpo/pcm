@@ -61,7 +61,7 @@ void initialize_lcd (void)
     PORTB &= ~_BV(PORTB3);
     // Put in 4-bit mode
     write(0x03);
-    _delay_ms(5);
+    _delay_ms(40);
     write(0x03);
     _delay_us(150);
     write(0x03);
@@ -84,11 +84,11 @@ void initialize_adc (void)
     ADCSRA = _BV(ADEN) | _BV(ADPS2) | _BV(ADPS1) | _BV(ADPS0);
     // Set PC0/ADC0 as ADC input, set reference voltage to Vcc (remember to
     //  connect a capacitor between Aref and GND)
-    ADMUX = _BV(REFS0);
 }
 
-unsigned int adc_convert ()
+unsigned int read_adc (uint8_t channel)
 {
+    ADMUX = _BV(REFS0) | channel;
     ADCSRA |= _BV(ADSC);
     while (ADCSRA & _BV(ADSC));
     return ADCW;
@@ -99,10 +99,15 @@ int main (void)
     initialize_lcd();
     initialize_adc();
     for (char *s = "ADC0: "; *s; s++) send(*s, 1);
+    position(0, 1);
+    for (char *s = "ADC1: "; *s; s++) send(*s, 1);
     while (1) {
         position(6, 0);
         char s[5] = {};
-        itoa(adc_convert(), s, 10);
+        itoa(read_adc(0), s, 10);
+        for (int i = 0; s[i]; i++) send(s[i], 1);
+        position(6, 1);
+        itoa(read_adc(1), s, 10);
         for (int i = 0; s[i]; i++) send(s[i], 1);
         _delay_ms(200);
     }
